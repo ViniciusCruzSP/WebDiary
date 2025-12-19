@@ -11,14 +11,14 @@
                     <h2>Create Diary Entry</h2>
                 </div>
                 <div class="card-body">
-                    <form asp-action="" method="post">
+                    <form asp-action="Create" method="post">
                         <div class="form-group mb-3">
                             <label asp-for="Title" class="form-label">Title</label>
                             <input asp-for="Title" class="form-control text-dark" placeholder="Enter a Title"/>
                         </div>
                         <div class="form-group mb-3">
-                            <label asp-for="Content" class="form-label">Note</label>
-                            <input asp-for="Content" class="form-control text-dark" placeholder="Enter a Title" />
+                            <label asp-for="Content" class="form-label">Content</label>
+                            <input asp-for="Content" class="form-control text-dark" placeholder="How was your day?" />
                         </div>
                         <div class="form-group mb-3">
                             <label asp-for="Created" class="form-label">Date</label>
@@ -26,7 +26,7 @@
                         </div>
                         <div class="d-flex justify-content-between mb-3">
                             <button type="submit" class="btn btn-primary">Create</button>
-                            <a asp-controller="DiaryEntries" asp-action="Index" class="btn btn-danger">Cancel</a>
+                            <a asp-controller="DiaryEntries" asp-action="Diary" class="btn btn-danger">Cancel</a>
                         </div>
                     </form>
                 </div>
@@ -34,3 +34,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts{
+    <partial name ="_ValidationScriptsPartial"/>
+}
