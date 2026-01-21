@@ -1,0 +1,74 @@
+﻿@model List<DiaryEntry>
+@{
+    ViewData["Title"] = "Diary Entries";
+}
+
+<div class="container">
+    <div class="row py-4">
+        <div class="col-12 text-center">
+            <a class="btn btn-primary" asp-area="" asp-controller="DiaryEntries" asp-action="Create">
+                Create new Diary Entry
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-star" viewBox="0 0 16 16">
+                    <path d="M7.84 4.1a.178.178 0 0 1 .32 0l.634 1.285a.18.18 0 0 0 .134.098l1.42.206c.145.021.204.2.098.303L9.42 6.993a.18.18 0 0 0-.051.158l.242 1.414a.178.178 0 0 1-.258.187l-1.27-.668a.18.18 0 0 0-.165 0l-1.27.668a.178.178 0 0 1-.257-.187l.242-1.414a.18.18 0 0 0-.05-.158l-1.03-1.001a.178.178 0 0 1 .098-.303l1.42-.206a.18.18 0 0 0 .134-.098z" />
+                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z" />
+                </svg>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive table-bordered row">
+    <table class="table col-md-9 border-2 border-black p-2 bg-black table-striped table-hover">
+        <thead>
+            <tr class="text-white">
+                <th class="bg-primary">Title</th>
+                <th class="bg-primary">Content</th>
+                <th class="bg-primary">Date</th>
+                <th class="bg-primary">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var entry in Model)
+                {
+                    <tr class="text-dark">
+                        <td>@entry.Title</td>
+                        <td class="col-md-4">
+                            <div class="content-scroll pe-2">
+                                @entry.Content
+                            </div>
+                        </td>
+                        <td>@entry.Created.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <a asp-controller="DiaryEntries" asp-action="Edit" asp-route-id="@entry.Id" class="btn btn-primary me-1">
+                                Edit
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325" />
+                                </svg>
+                            </a>
+                            <form asp-controller="DiaryEntries" asp-action="Delete" asp-route-id="@entry.Id" class="d-inline" method="post"
+                                  onsubmit="return confirm('Tem certeza que deseja excluir este registro?');">
+                                <button type="submit" class="btn btn-danger">
+                                    Delete
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-box-seam" viewBox="0 0 16 16">
+                                        <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center text-muted">
+                        No entries found
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
