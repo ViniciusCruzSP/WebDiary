@@ -1,4 +1,5 @@
 using DiaryApp.Data;
+using DiaryApp.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +11,7 @@ builder.Services.AddHttpClient("DiaryApi", client =>
 {
     client.BaseAddress = new Uri("https://localhost:5001/");
 });
-
+builder.Services.AddScoped<DiaryApiService>();
 
 var app = builder.Build();
 
