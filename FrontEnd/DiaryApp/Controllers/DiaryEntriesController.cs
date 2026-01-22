@@ -1,22 +1,22 @@
 ﻿using DiaryApp.Data;
 using DiaryApp.Models;
+using DiaryApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System.Threading.Tasks;
 
 namespace DiaryApp.Controllers
 {
     public class DiaryEntriesController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        public DiaryEntriesController(ApplicationDbContext db)
+        private readonly DiaryApiService _service;
+        public DiaryEntriesController(DiaryApiService service)
         {
-            _db = db;
+            _service = service;
         }
-        public IActionResult Diary()
+        public async Task<IActionResult> Diary()
         {
-            List<DiaryEntry> entries = _db.DiaryEntries
-                .OrderByDescending(en => en.Created)
-                .ToList();
+            var entries = await _service.GetAllAsync();
             return View(entries);
         }
         public IActionResult Index()

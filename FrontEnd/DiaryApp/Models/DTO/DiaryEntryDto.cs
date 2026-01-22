@@ -1,6 +1,6 @@
 ﻿namespace DiaryApp.Models.DTO
 {
-    public class DiaryEntry
+    public class DiaryEntryDto
     {
         public int Id { get; set; }
         public string Title { get; set; }
