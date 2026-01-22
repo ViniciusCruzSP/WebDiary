@@ -1,4 +1,5 @@
 using DiaryApp.Data;
+using DiaryApp.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DiaryContext")));
+builder.Services.AddHttpClient("DiaryApi", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:5001/");
+});
+builder.Services.AddScoped<DiaryApiService>();
 
 var app = builder.Build();
 
