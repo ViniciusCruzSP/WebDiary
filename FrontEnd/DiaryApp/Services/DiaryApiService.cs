@@ -1,4 +1,6 @@
 ﻿using DiaryApp.Models.DTO;
+using DiaryApp.Models.Errors;
+using DiaryApp.Exceptions;
 using System.Net.Http.Json;
 using static System.Net.WebRequestMethods;
 
@@ -28,7 +30,17 @@ namespace DiaryApp.Services
 
         public async Task CreateAsync(DiaryEntryDto dto)
         {
-            await _httpClient.PostAsJsonAsync("api/DiaryEntries", dto);
+            var response = await _httpClient.PostAsJsonAsync("api/DiaryEntries", dto);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var problem = await response.Content.ReadFromJsonAsync<ApiValidationProblemDetailsDto>();
+
+                if (problem != null && problem.Status == 400)
+                    throw new ApiValidationException(problem);
+
+                response.EnsureSuccessStatusCode();
+            }
         }
 
         public async Task UpdateAsync(int id, DiaryEntryDto dto)
