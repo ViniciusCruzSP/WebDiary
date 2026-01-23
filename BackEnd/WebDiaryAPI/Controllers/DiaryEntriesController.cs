@@ -89,5 +89,28 @@ namespace WebDiaryAPI.Controllers
         {
             return _context.DiaryEntries.Any(e => e.Id == id);
         }
+
+        private ActionResult? ValidateDiaryEntry(DiaryEntry entry)
+        {
+            var errors = new Dictionary<string, string[]>();
+
+            if (string.IsNullOrWhiteSpace(entry.Title))
+                errors["Title"] = ["Title is Required"];
+            else if (entry.Title.Length < 3)
+                errors["Title"] = ["Title must have at least 3 characters"];
+
+            if (string.IsNullOrWhiteSpace(entry.Content))
+                errors["Content"] = ["Content is Required"];
+            else if (entry.Content.Length < 10)
+                errors["Title"] = ["Content must have at least 10 characters"];
+
+            if (entry.Created > DateTime.UtcNow)
+                errors["Created"] = ["Date cannot be in the future."];
+
+            if (errors.Any())
+                return BadRequest(new ApiValidationProblemDetails(errors));
+
+            return null;
+        }
     }
 }

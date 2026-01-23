@@ -1,4 +1,5 @@
-﻿using DiaryApp.Models.DTO;
+﻿using DiaryApp.Exceptions;
+using DiaryApp.Models.DTO;
 using DiaryApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -33,9 +34,22 @@ namespace DiaryApp.Controllers
         {
             if (!ModelState.IsValid)
                 return View(dto);
-
-            await _service.CreateAsync(dto);
-            return RedirectToAction("Diary");
+            try
+            {
+                await _service.CreateAsync(dto);
+                return RedirectToAction("Diary");
+            }
+            catch (ApiValidationException ex)
+            {
+                foreach (var error in ex.ProblemDetails.Errors)
+                {
+                    foreach (var message in error.Value)
+                    {
+                        ModelState.AddModelError(error.Key, message);
+                    }
+                }
+                return View(dto);
+            }
         }
 
         [HttpGet]
