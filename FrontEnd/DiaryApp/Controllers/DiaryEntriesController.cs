@@ -61,16 +61,9 @@ namespace DiaryApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var entry = _db.DiaryEntries.Find(id);
-
-            if (entry == null)
-                return NotFound();
-
-            _db.DiaryEntries.Remove(entry);
-            _db.SaveChanges();
-
+            await _service.DeleteAsync(id);
             return RedirectToAction("Diary");
         }
 
