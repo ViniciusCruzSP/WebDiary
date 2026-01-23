@@ -37,6 +37,17 @@ namespace WebDiaryAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<DiaryEntry>> PostDiaryEntry(DiaryEntry diaryEntry)
         {
+            if (string.IsNullOrWhiteSpace(diaryEntry.Title))
+                return BadRequest("Title is required.");
+            if (diaryEntry.Title.Length < 3)
+                return BadRequest("Title must have at least 3 characters");
+            if (string.IsNullOrWhiteSpace(diaryEntry.Content))
+                return BadRequest("Content is required.");
+            if (diaryEntry.Content.Length < 10)
+                return BadRequest("Content must have at least 10 characters");
+            if (diaryEntry.Created > DateTime.UtcNow)
+                return BadRequest("Date cannot be in the future");
+
             diaryEntry.Id = 0;
             _context.DiaryEntries.Add(diaryEntry);
             await _context.SaveChangesAsync();
