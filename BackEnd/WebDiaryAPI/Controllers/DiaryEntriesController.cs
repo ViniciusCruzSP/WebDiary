@@ -37,31 +37,32 @@ namespace WebDiaryAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<DiaryEntry>> PostDiaryEntry(DiaryEntry diaryEntry)
         {
-            if (string.IsNullOrWhiteSpace(diaryEntry.Title))
-                return BadRequest("Title is required.");
-            if (diaryEntry.Title.Length < 3)
-                return BadRequest("Title must have at least 3 characters");
-            if (string.IsNullOrWhiteSpace(diaryEntry.Content))
-                return BadRequest("Content is required.");
-            if (diaryEntry.Content.Length < 10)
-                return BadRequest("Content must have at least 10 characters");
-            if (diaryEntry.Created > DateTime.UtcNow)
-                return BadRequest("Date cannot be in the future");
+            var validationResult = ValidateDiaryEntry(diaryEntry);
+            if (validationResult != null)
+                return validationResult;
 
             diaryEntry.Id = 0;
+
             _context.DiaryEntries.Add(diaryEntry);
             await _context.SaveChangesAsync();
-            var resourceUrl = Url.Action(nameof(GetDiaryEntry), new { id = diaryEntry.Id });
-            return Created(resourceUrl, diaryEntry);
+
+            return CreatedAtAction(
+                nameof(GetDiaryEntry),
+                new { id = diaryEntry.Id },
+                diaryEntry
+            );
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDiaryEntry(int id, [FromBody] DiaryEntry diaryEntry)
         {
             if (id != diaryEntry.Id)
-            {
                 return BadRequest();
-            }
+
+            var validationResult = ValidateDiaryEntry(diaryEntry);
+            if (validationResult != null)
+                return validationResult;
+
             _context.Entry(diaryEntry).State = EntityState.Modified;
 
             try
@@ -71,13 +72,9 @@ namespace WebDiaryAPI.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!DiaryEntryExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
@@ -99,6 +96,26 @@ namespace WebDiaryAPI.Controllers
         private bool DiaryEntryExists(int id)
         {
             return _context.DiaryEntries.Any(e => e.Id == id);
+        }
+
+        private ActionResult? ValidateDiaryEntry(DiaryEntry entry)
+        {
+            if (string.IsNullOrWhiteSpace(entry.Title))
+                return BadRequest("Title is required.");
+
+            if (entry.Title.Length < 3)
+                return BadRequest("Title must have at least 3 characters.");
+
+            if (string.IsNullOrWhiteSpace(entry.Content))
+                return BadRequest("Content is required.");
+
+            if (entry.Content.Length < 10)
+                return BadRequest("Title must have at least 10 characters.");
+
+            if (entry.Created > DateTime.UtcNow)
+                return BadRequest("Date cannot be in the future.");
+
+            return null;
         }
     }
 }
