@@ -37,36 +37,18 @@ namespace DiaryApp.Controllers
                 return View(dto);
             }
             await _service.CreateAsync(dto);
-            return View();
-        }
-
-        [HttpGet]
-        public IActionResult Edit(int? id)
-        {
-            if(id == null || id == 0)
-            {
-                return NotFound();
-            }
-
-            DiaryEntry? diaryEntry = _db.DiaryEntries.Find(id);
-
-            return View(diaryEntry);
+            return RedirectToAction("Diary");
         }
 
         [HttpPost]
-        public IActionResult Edit(DiaryEntry obj)
+        public async Task<IActionResult> Edit(int id, DiaryEntryDto dto)
         {
-            if (obj != null && obj.Title.Length < 3)
-            {
-                ModelState.AddModelError("Title", "Title too short");
-            }
             if (ModelState.IsValid)
             {
-                _db.DiaryEntries.Update(obj);
-                _db.SaveChanges();
-                return RedirectToAction("Diary");
+                return View(dto);
             }
-            return View(obj);
+            await _service.UpdateAsync(id, dto);
+            return RedirectToAction("Diary");
         }
 
         [HttpPost]
