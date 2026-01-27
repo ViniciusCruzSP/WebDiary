@@ -45,7 +45,17 @@ namespace DiaryApp.Services
 
         public async Task UpdateAsync(int id, DiaryEntryDto dto)
         {
-            await _httpClient.PutAsJsonAsync($"api/DiaryEntries/{id}", dto);
+            var response = await _httpClient.PutAsJsonAsync($"api/DiaryEntries/{id}", dto);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var problem = await response.Content.ReadFromJsonAsync<ApiValidationProblemDetailsDto>();
+
+                if (problem != null && problem.Status == 400)
+                    throw new ApiValidationException(problem);
+
+                response.EnsureSuccessStatusCode();
+            }
         }
 
         public async Task DeleteAsync(int id)

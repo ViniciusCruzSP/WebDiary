@@ -68,9 +68,22 @@ namespace DiaryApp.Controllers
         {
             if (!ModelState.IsValid)
                 return View(dto);
-
-            await _service.UpdateAsync(id, dto);
-            return RedirectToAction("Diary");
+            try
+            {
+                await _service.UpdateAsync(id, dto);
+                return RedirectToAction("Diary");
+            }
+            catch (ApiValidationException ex)
+            {
+                foreach (var error in ex.ProblemDetails.Errors)
+                {
+                    foreach (var message in error.Value)
+                    {
+                        ModelState.AddModelError(error.Key, message);
+                    }
+                }
+                return View(dto);
+            }
         }
 
         [HttpPost]
