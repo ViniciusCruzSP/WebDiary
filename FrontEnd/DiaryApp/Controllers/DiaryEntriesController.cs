@@ -55,12 +55,17 @@ namespace DiaryApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var entry = await _service.GetByIdAsync(id);
+            try
+            {
+                var entry = await _service.GetByIdAsync(id);
+                return View(entry);
+            }
+            catch (ApiNotFoundException)
+            {
+                return RedirectToAction(nameof(Diary));
+            }
 
-            if(entry == null)
-                return NotFound();
-
-            return View(entry);
+            
         }
 
         [HttpPost]

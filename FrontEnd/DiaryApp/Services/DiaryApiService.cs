@@ -21,11 +21,16 @@ namespace DiaryApp.Services
                 "api/DiaryEntries"
             );
         }
-        public async Task<DiaryEntryDto?> GetByIdAsync(int id)
+        public async Task<DiaryEntryDto> GetByIdAsync(int id)
         {
-            return await _httpClient.GetFromJsonAsync<DiaryEntryDto>(
-                $"api/DiaryEntries/{id}"
-            );
+            var response = await _httpClient.GetAsync($"api/DiaryEntries/{id}");
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                throw new ApiNotFoundException("Diary Entry not found.");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<DiaryEntryDto>();
         }
 
         public async Task CreateAsync(DiaryEntryDto dto)
