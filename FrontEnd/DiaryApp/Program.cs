@@ -1,10 +1,14 @@
+using DiaryApp.Filters;
 using DiaryApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var apiBaseUrl = builder.Configuration["ApiSettings:DiaryApiBaseUrl"];
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<ApiExceptionFilter>();
+});
 builder.Services.AddHttpClient("DiaryApi", client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl!);

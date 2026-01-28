@@ -34,38 +34,16 @@ namespace DiaryApp.Controllers
         {
             if (!ModelState.IsValid)
                 return View(dto);
-            try
-            {
-                await _service.CreateAsync(dto);
-                return RedirectToAction("Diary");
-            }
-            catch (ApiValidationException ex)
-            {
-                foreach (var error in ex.ProblemDetails.Errors)
-                {
-                    foreach (var message in error.Value)
-                    {
-                        ModelState.AddModelError(error.Key, message);
-                    }
-                }
-                return View(dto);
-            }
+
+            await _service.CreateAsync(dto);
+            return RedirectToAction("Diary");
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            try
-            {
-                var entry = await _service.GetByIdAsync(id);
-                return View(entry);
-            }
-            catch (ApiNotFoundException)
-            {
-                return RedirectToAction(nameof(Diary));
-            }
-
-            
+            var entry = await _service.GetByIdAsync(id);
+            return View(entry);
         }
 
         [HttpPost]
@@ -73,22 +51,9 @@ namespace DiaryApp.Controllers
         {
             if (!ModelState.IsValid)
                 return View(dto);
-            try
-            {
-                await _service.UpdateAsync(id, dto);
-                return RedirectToAction("Diary");
-            }
-            catch (ApiValidationException ex)
-            {
-                foreach (var error in ex.ProblemDetails.Errors)
-                {
-                    foreach (var message in error.Value)
-                    {
-                        ModelState.AddModelError(error.Key, message);
-                    }
-                }
-                return View(dto);
-            }
+
+            await _service.UpdateAsync(id, dto);
+            return RedirectToAction("Diary");
         }
 
         [HttpPost]
