@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,29 +23,39 @@ namespace WebDiaryAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DiaryEntry>>> GetDiaryEntries()
         {
-            return await _context.DiaryEntries.ToListAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            return await _context.DiaryEntries
+                .Where(e => e.UserId == userId)
+                .ToListAsync();
+
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<DiaryEntry>> GetDiaryEntry(int id)
         {
-            var diaryEntry = await _context.DiaryEntries.FindAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var diaryEntry = await _context.DiaryEntries
+                .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
 
             if (diaryEntry == null)
-            {
                 return NotFound();
-            }
+
             return diaryEntry;
+
         }
 
         [HttpPost]
         public async Task<ActionResult<DiaryEntry>> PostDiaryEntry(DiaryEntry diaryEntry)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var validationResult = ValidateDiaryEntry(diaryEntry);
             if (validationResult != null)
                 return validationResult;
 
             diaryEntry.Id = 0;
+            diaryEntry.UserId = userId;
 
             _context.DiaryEntries.Add(diaryEntry);
             await _context.SaveChangesAsync();
@@ -59,46 +70,40 @@ namespace WebDiaryAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDiaryEntry(int id, [FromBody] DiaryEntry diaryEntry)
         {
-            if (id != diaryEntry.Id)
-                return BadRequest();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var validationResult = ValidateDiaryEntry(diaryEntry);
-            if (validationResult != null)
-                return validationResult;
+            var existingEntry = await _context.DiaryEntries
+                .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
 
-            _context.Entry(diaryEntry).State = EntityState.Modified;
+            if (existingEntry == null)
+                return NotFound();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DiaryEntryExists(id))
-                    return NotFound();
-                else
-                    throw;
-            }
+            existingEntry.Title = diaryEntry.Title;
+            existingEntry.Content = diaryEntry.Content;
+            existingEntry.Created = diaryEntry.Created;
+
+            await _context.SaveChangesAsync();
 
             return NoContent();
+
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDiaryEntry(int id)
         {
-            var diaryEntry = await _context.DiaryEntries.FindAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var diaryEntry = await _context.DiaryEntries
+                .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
+
             if (diaryEntry == null)
-            {
                 return NotFound();
-            }
+
             _context.DiaryEntries.Remove(diaryEntry);
             await _context.SaveChangesAsync();
-            return NoContent();
-        }
 
-        private bool DiaryEntryExists(int id)
-        {
-            return _context.DiaryEntries.Any(e => e.Id == id);
+            return NoContent();
+
         }
 
         private ActionResult? ValidateDiaryEntry(DiaryEntry entry)
