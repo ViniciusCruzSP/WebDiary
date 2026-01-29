@@ -3,6 +3,7 @@ using DiaryApp.Models.Errors;
 using DiaryApp.Exceptions;
 using System.Net.Http.Json;
 using static System.Net.WebRequestMethods;
+using DiaryApp.Models.Auth;
 
 namespace DiaryApp.Services
 {
@@ -13,6 +14,17 @@ namespace DiaryApp.Services
         public DiaryApiService(IHttpClientFactory factory)
         {
             _httpClient = factory.CreateClient("DiaryApi");
+        }
+
+        public async Task<string?> LoginAsync(string email, string password)
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/auth/login",new {Email = email, Password = password });
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var result = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
+            return result?.Token;
         }
 
         public async Task<List<DiaryEntryDto>> GetAllAsync()

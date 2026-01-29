@@ -21,7 +21,12 @@ namespace DiaryApp.Controllers
         }
         public IActionResult Index()
         {
-            return View();
+            var token = Request.Cookies["access_token"];
+
+            if (string.IsNullOrEmpty(token))
+                return RedirectToAction("Login", "Account");
+
+            return RedirectToAction("Diary");
         }
 
         public IActionResult Create()
