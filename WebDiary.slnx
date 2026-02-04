@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/BackEnd/">
+    <Project Path="BackEnd/WebDiaryAPI/WebDiaryAPI.csproj" />
+  </Folder>
+  <Folder Name="/FrontEnd/">
+    <Project Path="FrontEnd/DiaryApp/DiaryApp.csproj" />
+  </Folder>
+</Solution>
