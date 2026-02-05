@@ -1,8 +1,5 @@
 <Solution>
-  <Folder Name="/BackEnd/">
-    <Project Path="BackEnd/WebDiaryAPI/WebDiaryAPI.csproj" />
-  </Folder>
-  <Folder Name="/FrontEnd/">
-    <Project Path="FrontEnd/DiaryApp/DiaryApp.csproj" />
-  </Folder>
+  <Project Path="src/BackEnd/WebDiaryAPI/WebDiaryAPI.csproj" />
+  <Project Path="src/FrontEnd/DiaryApp/DiaryApp.csproj" />
+  <Project Path="tests/WebDiaryAPI.Tests/WebDiaryAPI.Tests.csproj" />
 </Solution>

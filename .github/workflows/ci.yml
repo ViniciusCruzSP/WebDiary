@@ -22,11 +22,11 @@ jobs:
 
       - name: Restore backend
         run: dotnet restore
-        working-directory: BackEnd/WebDiaryAPI
+        working-directory: src/BackEnd/WebDiaryAPI
 
       - name: Build solution
         run: dotnet build --no-restore --configuration Release
-        working-directory: BackEnd/WebDiaryAPI
+        working-directory: src/BackEnd/WebDiaryAPI
   
   build-frontend:
     name: Build - FrontEnd(DiaryApp)
@@ -43,8 +43,8 @@ jobs:
 
       - name: Restore backend
         run: dotnet restore
-        working-directory: FrontEnd/DiaryApp
+        working-directory: src/FrontEnd/DiaryApp
 
       - name: Build solution
         run: dotnet build --no-restore --configuration Release
-        working-directory: FrontEnd/DiaryApp
+        working-directory: src/FrontEnd/DiaryApp
