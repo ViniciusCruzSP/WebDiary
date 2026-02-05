@@ -7,8 +7,8 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
-    name: Build - WebDiary
+  build-backend:
+    name: Build - BackEnd(WebDiaryAPI)
     runs-on: ubuntu-latest
 
     steps:
@@ -20,8 +20,31 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Restore dependencies
+      - name: Restore backend
         run: dotnet restore
+        working-directory: BackEnd/WebDiaryAPI
 
       - name: Build solution
         run: dotnet build --no-restore --configuration Release
+        working-directory: BackEnd/WebDiaryAPI
+  
+  build-frontend:
+    name: Build - FrontEnd(DiaryApp)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore backend
+        run: dotnet restore
+        working-directory: FrontEnd/DiaryApp
+
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+        working-directory: FrontEnd/DiaryApp
